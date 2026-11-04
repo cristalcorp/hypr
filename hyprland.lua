@@ -9,9 +9,9 @@
 ------------------
 
 -- See https://wiki.hypr.land/configuring/core/monitors/
-hl.monitor({ output = "",  mode = "preferred", position = "auto", scale = 1 })
-hl.monitor({ output = "0", mode = "preferred", position = "auto", scale = 1 })
-hl.monitor({ output = "1", mode = "preferred", position = "auto", scale = 1 })
+hl.monitor({ output = "",  mode = "preferred", position = "auto", scale = 1, reserved_area = { top = 46 } })
+hl.monitor({ output = "0", mode = "preferred", position = "auto", scale = 1, reserved_area = { top = 46 } })
+hl.monitor({ output = "1", mode = "preferred", position = "auto", scale = 1, reserved_area = { top = 46 } })
 
 -- Those options are supposed to improve performance in Wayland while using Nvidia
 hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
@@ -44,6 +44,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd(browser,  { workspace = "1 silent" })
     hl.exec_cmd(terminal, { workspace = "2 silent" })
     hl.exec_cmd(obsidian, { workspace = "3 silent" })
+    hl.exec_cmd("hypridle")   -- idle: hides waybar after 30s (see hypridle.conf)
     hl.exec_cmd("qbz")    -- workspace set by the "qbz-on-workspace-4" window rule
 end)
 
