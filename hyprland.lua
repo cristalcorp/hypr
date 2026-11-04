@@ -39,6 +39,12 @@ local obsidian    = "obsidian"
 hl.on("hyprland.start", function()
     hl.exec_cmd("waybar & swaync")
     hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
+
+    -- Apps on their workspaces (icons in waybar: 1 browser, 2 terminal, 3 notes, 4 music)
+    hl.exec_cmd(browser,  { workspace = "1 silent" })
+    hl.exec_cmd(terminal, { workspace = "2 silent" })
+    hl.exec_cmd(obsidian, { workspace = "3 silent" })
+    hl.exec_cmd("qbz")    -- workspace set by the "qbz-on-workspace-4" window rule
 end)
 
 
@@ -244,9 +250,9 @@ hl.bind(mainMod .. " + O", hl.dsp.exec_cmd(obsidian))
 
 hl.bind(mainMod .. " + Z", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
 
-hl.bind("PRINT",                hl.dsp.exec_cmd("hyprshot -m window"))
-hl.bind("CTRL + PRINT",         hl.dsp.exec_cmd("hyprshot -m region"))
-hl.bind("CTRL + SHIFT + PRINT", hl.dsp.exec_cmd("hyprshot -m output"))
+hl.bind("PRINT",                hl.dsp.exec_cmd("hyprshot -m window -o ~/Images/Screenshots"))
+hl.bind("CTRL + PRINT",         hl.dsp.exec_cmd("hyprshot -m region -o ~/Images/Screenshots"))
+hl.bind("CTRL + SHIFT + PRINT", hl.dsp.exec_cmd("hyprshot -m output -o ~/Images/Screenshots"))
 
 -- Move focus with mainMod + h/j/k/l (same mapping as the legacy config)
 hl.bind(mainMod .. " + h", hl.dsp.focus({ direction = "left" }))
@@ -316,6 +322,13 @@ hl.window_rule({
     },
 
     no_focus = true,
+})
+
+-- QBZ: its window maps too late for exec rules, place it by class
+hl.window_rule({
+    name      = "qbz-on-workspace-4",
+    match     = { class = "^com\\.blitzfc\\.qbz$" },
+    workspace = "4 silent",
 })
 
 -- Hyprland-run windowrule
