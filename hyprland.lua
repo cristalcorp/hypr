@@ -149,9 +149,9 @@ hl.animation({ leaf = "layersIn",      enabled = true, speed = 4,    bezier = "e
 hl.animation({ leaf = "layersOut",     enabled = true, speed = 1.5,  bezier = "linear",       style = "fade" })
 hl.animation({ leaf = "fadeLayersIn",  enabled = true, speed = 1.79, bezier = "almostLinear" })
 hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 1.39, bezier = "almostLinear" })
-hl.animation({ leaf = "workspaces",    enabled = true, speed = 1.94, bezier = "almostLinear", style = "fade" })
-hl.animation({ leaf = "workspacesIn",  enabled = true, speed = 1.21, bezier = "almostLinear", style = "fade" })
-hl.animation({ leaf = "workspacesOut", enabled = true, speed = 1.94, bezier = "almostLinear", style = "fade" })
+hl.animation({ leaf = "workspaces",    enabled = true, speed = 4,    bezier = "almostLinear", style = "fade" })
+hl.animation({ leaf = "workspacesIn",  enabled = true, speed = 4,    bezier = "almostLinear", style = "fade" })
+hl.animation({ leaf = "workspacesOut", enabled = true, speed = 4,    bezier = "almostLinear", style = "fade" })
 hl.animation({ leaf = "zoomFactor",    enabled = true, speed = 7,    bezier = "quick" })
 
 -- "Smart gaps" / "No gaps when only"
@@ -323,6 +323,12 @@ hl.window_rule({
 
     no_focus = true,
 })
+
+-- Workspaces pinned to monitors: 1 (browser) on the left screen, the rest in front
+hl.workspace_rule({ workspace = "1", monitor = "HDMI-A-1", default = true })
+for i = 2, 10 do
+    hl.workspace_rule({ workspace = tostring(i), monitor = "DP-1", default = (i == 2) })
+end
 
 -- QBZ: its window maps too late for exec rules, place it by class
 hl.window_rule({
