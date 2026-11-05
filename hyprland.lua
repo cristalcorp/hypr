@@ -189,8 +189,12 @@ hl.config({
 
 hl.config({
     misc = {
-        force_default_wallpaper = -1,    -- Set to 0 or 1 to disable the anime mascot wallpapers
-        disable_hyprland_logo   = false, -- If true disables the random hyprland logo / anime girl background. :(
+        force_default_wallpaper = 0,          -- no default wallpaper (OLED care)
+        disable_hyprland_logo   = true,       -- no logo / mascot background
+        background_color        = "0x000000", -- pure black: OLED pixels off, no wear
+    },
+    cursor = {
+        inactive_timeout = 5,                 -- hide cursor after 5 s idle (OLED care)
     },
 })
 
