@@ -45,6 +45,8 @@ hl.on("hyprland.start", function()
     hl.exec_cmd(terminal, { workspace = "2 silent" })
     hl.exec_cmd(obsidian, { workspace = "3 silent" })
     hl.exec_cmd("hypridle")   -- idle: hides waybar after 30s (see hypridle.conf)
+    hl.exec_cmd("awww-daemon --quiet")
+    hl.exec_cmd("~/.config/hypr/scripts/wallpaper-rotate.sh")   -- OLED: dark-gray rotation, 5 min, 20 s fade
     hl.exec_cmd("qbz")    -- workspace set by the "qbz-on-workspace-4" window rule
 end)
 
@@ -191,7 +193,7 @@ hl.config({
     misc = {
         force_default_wallpaper = 0,          -- no default wallpaper (OLED care)
         disable_hyprland_logo   = true,       -- no logo / mascot background
-        background_color        = "0x000000", -- pure black: OLED pixels off, no wear
+        background_color        = "0x000000", -- fallback before awww-daemon starts (wallpaper: scripts/wallpaper-rotate.sh)
     },
     cursor = {
         inactive_timeout = 5,                 -- hide cursor after 5 s idle (OLED care)
