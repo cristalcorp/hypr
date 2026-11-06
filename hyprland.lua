@@ -103,7 +103,7 @@ hl.config({
         -- Please see the Tearing page on the wiki before you turn this on
         allow_tearing = false,
 
-        layout = "dwindle",
+        layout = "master",   -- centered master on the 32:9 G93SD (see master below)
     },
 
     decoration = {
@@ -188,6 +188,9 @@ hl.animation({ leaf = "zoomFactor",    enabled = true, speed = 7,    bezier = "q
 hl.config({
     master = {
         new_status = "master",
+        orientation = "center",              -- main window in the middle of the 32:9 screen
+        slave_count_for_center_master = 0,   -- centered even when alone (sides show the wallpaper)
+        mfact = 0.5,                         -- main window = half the width (2538 px)
     },
 })
 
