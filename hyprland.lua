@@ -43,7 +43,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
 
     -- Apps on their workspaces (icons in waybar: 1 browser, 2 terminal, 3 notes, 4 music)
-    hl.exec_cmd(browser,  { workspace = "1 silent" })
+    hl.exec_cmd("~/.config/hypr/scripts/ws1-start.sh")   -- ws 1: Firefox left, terminal right, terminal center
     hl.exec_cmd(terminal, { workspace = "2 silent" })
     hl.exec_cmd(obsidian, { workspace = "3 silent" })
     hl.exec_cmd("hypridle")   -- idle: hides waybar after 30s (see hypridle.conf)
