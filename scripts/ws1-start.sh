@@ -1,5 +1,5 @@
 #!/bin/sh
-# Workspace 1 at startup: Firefox left, terminal right, terminal center.
+# Workspace 1 at startup: Firefox left, Brave right, terminal center.
 # Centered master (D-011, new_status = "master"): 1st window -> left,
 # 2nd -> right, last -> center. Each app waits for the previous window.
 wait_for() {   # $1 = class, $2 = count on workspace 1 (timeout 30 s)
@@ -11,6 +11,6 @@ wait_for() {   # $1 = class, $2 = count on workspace 1 (timeout 30 s)
 }
 hyprctl dispatch 'hl.dsp.exec_cmd("firefox", { workspace = "1 silent" })'
 wait_for firefox 1
-hyprctl dispatch 'hl.dsp.exec_cmd("kitty", { workspace = "1 silent" })'
-wait_for kitty 1
+hyprctl dispatch 'hl.dsp.exec_cmd("brave --ozone-platform=wayland --enable-features=UseOzonePlatform", { workspace = "1 silent" })'
+wait_for brave-browser 1
 hyprctl dispatch 'hl.dsp.exec_cmd("kitty", { workspace = "1 silent" })'
