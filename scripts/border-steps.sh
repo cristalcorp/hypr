@@ -6,6 +6,7 @@ INTERVAL="${2:-30}"   # seconds between steps
 a=0
 while true; do
     a=$(( (a + STEP) % 360 ))
-    hyprctl dispatch "hl.config({ general = { col = { active_border = { colors = { \"rgba(33ccffee)\", \"rgba(00ff99ee)\" }, angle = $a } } } })" >/dev/null 2>&1
+    # wrapped in a function: a bare hl.config() makes hyprctl dispatch log "expected a dispatcher" in configerrors
+    hyprctl dispatch "function() hl.config({ general = { col = { active_border = { colors = { \"rgba(33ccffee)\", \"rgba(00ff99ee)\" }, angle = $a } } } }) end" >/dev/null 2>&1
     sleep "$INTERVAL"
 done

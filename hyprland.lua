@@ -84,6 +84,9 @@ hl.env("HYPRCURSOR_SIZE", "24")
 ---- LOOK AND FEEL ----
 -----------------------
 
+-- Custom layout "lua:centre" (D-011): fixed centre window, dwindle-like sides
+dofile(os.getenv("HOME") .. "/.config/hypr/layouts/centre.lua")
+
 -- See https://wiki.hypr.land/configuring/core/config-options/
 hl.config({
     general = {
@@ -104,7 +107,7 @@ hl.config({
         -- Please see the Tearing page on the wiki before you turn this on
         allow_tearing = false,
 
-        layout = "master",   -- centered master on the 32:9 G93SD (see master below)
+        layout = "lua:centre",   -- fixed centre window, new windows split the active side window (layouts/centre.lua); fallback: "master"
     },
 
     decoration = {
@@ -258,6 +261,8 @@ hl.bind(mainMod .. " + V",      hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + space",  hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P",      hl.dsp.window.pseudo())          -- dwindle
 hl.bind(mainMod .. " + R",      hl.dsp.layout("togglesplit"))    -- dwindle
+hl.bind(mainMod .. " + CTRL + left",  hl.dsp.layout("shrink"))   -- lua:centre: centre window narrower
+hl.bind(mainMod .. " + CTRL + right", hl.dsp.layout("grow"))     -- lua:centre: centre window wider
 
 hl.bind(mainMod .. " + F", hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(brave))
