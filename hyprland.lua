@@ -263,6 +263,11 @@ hl.bind(mainMod .. " + P",      hl.dsp.window.pseudo())          -- dwindle
 hl.bind(mainMod .. " + R",      hl.dsp.layout("togglesplit"))    -- dwindle
 hl.bind(mainMod .. " + CTRL + left",  hl.dsp.layout("shrink"))   -- lua:centre: centre window narrower
 hl.bind(mainMod .. " + CTRL + right", hl.dsp.layout("grow"))     -- lua:centre: centre window wider
+hl.bind(mainMod .. " + SHIFT + left",   hl.dsp.layout("move l"))      -- lua:centre: move window (same side: swap;
+hl.bind(mainMod .. " + SHIFT + right",  hl.dsp.layout("move r"))      --   toward the centre: jump to the other side)
+hl.bind(mainMod .. " + SHIFT + up",     hl.dsp.layout("move u"))
+hl.bind(mainMod .. " + SHIFT + down",   hl.dsp.layout("move d"))
+hl.bind(mainMod .. " + SHIFT + RETURN", hl.dsp.layout("swapcentre"))  -- lua:centre: active window <-> centre
 
 hl.bind(mainMod .. " + F", hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(brave))
