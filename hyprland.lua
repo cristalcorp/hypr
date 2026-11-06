@@ -9,6 +9,8 @@
 ------------------
 
 -- See https://wiki.hypr.land/configuring/core/monitors/
+-- Samsung Odyssey OLED G9 G93SD (D-007): native 5120x1440 at 240 Hz, matched by name (any port)
+hl.monitor({ output = "desc:Samsung Electric Company Odyssey G93SD", mode = "5120x1440@240", position = "0x0", scale = 1, reserved_area = { top = 46 } })
 hl.monitor({ output = "",  mode = "preferred", position = "auto", scale = 1, reserved_area = { top = 46 } })
 hl.monitor({ output = "0", mode = "preferred", position = "auto", scale = 1, reserved_area = { top = 46 } })
 hl.monitor({ output = "1", mode = "preferred", position = "auto", scale = 1, reserved_area = { top = 46 } })
