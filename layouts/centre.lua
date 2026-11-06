@@ -15,8 +15,9 @@
 --   refresh                               recompute (sent on window close)
 -- Mouse drag (Super + left button): the window leaves the layout while dragged and comes back on
 -- release with its dropped box; if the cursor is inside it, it is placed under the cursor
--- (on the centre or from it: swap; on a side window: splits it, on the cursor's half, like dwindle;
--- on an empty side: takes it). Otherwise (e.g. floating toggled back) it returns to its place.
+-- (on the centre or from it: swap; on a side window: splits it toward the edge nearest the cursor,
+-- top/bottom: one above the other, left/right: side by side; on an empty side: takes it).
+-- Otherwise (e.g. floating toggled back) it returns to its place.
 local NAME = CENTRE_LAYOUT_NAME or "centre"
 local MFACT = 0.36
 local SAVE = (os.getenv("XDG_RUNTIME_DIR") or "/tmp") .. "/hypr-" .. NAME .. "-layout.lua"
@@ -141,8 +142,10 @@ local function drop(ctx, st, g, id, c)
         local ts = where(st, t)
         if ts ~= "l" and ts ~= "r" then return end
         local b = g[t]
-        local dir = (not st[ts].id and b.w >= b.h) and "h" or "v"
-        local first = (dir == "h") and (c.x < b.x + b.w / 2) or (dir == "v" and c.y < b.y + b.h / 2)
+        -- nearest edge of the target window decides: top/bottom -> one above the other, left/right -> side by side
+        local fx, fy = (c.x - b.x) / b.w, (c.y - b.y) / b.h
+        local dir = (math.min(fx, 1 - fx) < math.min(fy, 1 - fy)) and "h" or "v"
+        local first = (dir == "h") and (fx < 0.5) or (dir == "v" and fy < 0.5)
         st[ts] = split_leaf(st[ts], t, id, dir, first)
         return
     end
