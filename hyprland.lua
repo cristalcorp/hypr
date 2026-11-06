@@ -49,6 +49,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("hypridle")   -- idle: hides waybar after 30s (see hypridle.conf)
     hl.exec_cmd("awww-daemon --quiet")
     hl.exec_cmd("~/.config/hypr/scripts/wallpaper-rotate.sh")   -- OLED: dark-gray rotation, 5 min, 20 s fade
+    hl.exec_cmd("~/.config/hypr/scripts/border-steps.sh")       -- OLED: border gradient angle +45° every 30 s
     hl.exec_cmd("qbz")    -- workspace set by the "qbz-on-workspace-4" window rule
 end)
 
@@ -143,8 +144,8 @@ hl.curve("quick",          { type = "bezier", points = { {0.15, 0},    {0.1, 1} 
 
 hl.animation({ leaf = "global",        enabled = true, speed = 10,   bezier = "default" })
 hl.animation({ leaf = "border",        enabled = true, speed = 5.39, bezier = "easeOutQuint" })
--- OLED care: the border gradient keeps rotating (~10 s per turn), so no border pixel stays the same colour
-hl.animation({ leaf = "borderangle",   enabled = true, speed = 100,  bezier = "linear",       style = "loop" })
+-- OLED care (D-006): continuous rotation redrew every frame at 240 Hz (I-011); stepped angle instead (scripts/border-steps.sh)
+hl.animation({ leaf = "borderangle",   enabled = false })
 hl.animation({ leaf = "windows",       enabled = true, speed = 4.79, bezier = "easeOutQuint" })
 hl.animation({ leaf = "windowsIn",     enabled = true, speed = 4.1,  bezier = "easeOutQuint", style = "popin 87%" })
 hl.animation({ leaf = "windowsOut",    enabled = true, speed = 1.49, bezier = "linear",       style = "popin 87%" })
