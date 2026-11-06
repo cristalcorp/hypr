@@ -190,7 +190,7 @@ hl.config({
         new_status = "master",
         orientation = "center",              -- main window in the middle of the 32:9 screen
         slave_count_for_center_master = 0,   -- centered even when alone (sides show the wallpaper)
-        mfact = 0.5,                         -- main window = half the width (2538 px)
+        mfact = 0.36,                        -- main window ≈ 1827 px of 5120 (chosen by Cris on the G9)
     },
 })
 
