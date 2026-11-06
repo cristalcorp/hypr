@@ -333,11 +333,12 @@ hl.window_rule({
     no_focus = true,
 })
 
--- Workspaces pinned to monitors: 1 (browser) on the left screen, the rest in front
-hl.workspace_rule({ workspace = "1", monitor = "HDMI-A-1", default = true })
-for i = 2, 10 do
-    hl.workspace_rule({ workspace = tostring(i), monitor = "DP-1", default = (i == 2) })
-end
+-- Single screen (G93SD, D-007): workspaces are no longer pinned to monitors.
+-- Previous two-screen rules (D-002, replaced):
+-- hl.workspace_rule({ workspace = "1", monitor = "HDMI-A-1", default = true })
+-- for i = 2, 10 do
+--     hl.workspace_rule({ workspace = tostring(i), monitor = "DP-1", default = (i == 2) })
+-- end
 
 -- QBZ: its window maps too late for exec rules, place it by class
 hl.window_rule({
