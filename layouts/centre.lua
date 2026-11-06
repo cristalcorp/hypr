@@ -13,6 +13,10 @@
 --                                         the neighbouring side window
 --   swapcentre                            swap the active window with the centre window
 --   refresh                               recompute (sent on window close)
+-- Mouse drag (Super + left button): the window leaves the layout while dragged and comes back on
+-- release with its dropped box; if the cursor is inside it, it is placed under the cursor
+-- (on the centre or from it: swap; on a side window: splits it, on the cursor's half, like dwindle;
+-- on an empty side: takes it). Otherwise (e.g. floating toggled back) it returns to its place.
 local NAME = CENTRE_LAYOUT_NAME or "centre"
 local MFACT = 0.36
 local SAVE = (os.getenv("XDG_RUNTIME_DIR") or "/tmp") .. "/hypr-" .. NAME .. "-layout.lua"
@@ -39,6 +43,7 @@ end
 local states = load_states()   -- workspace key -> { mfact, centre, l, r } (l / r: tree nodes)
 local saved = dump(states)
 local geo = {}                 -- workspace key -> { address -> box } (last layout, not saved)
+local seen = {}                -- workspace key -> { address -> true } (targets of the last layout)
 
 local function save_states()
     local s = dump(states)
@@ -73,13 +78,16 @@ local function prune(n, keep)
     return n
 end
 
--- replace leaf `target` by a split (target, new) in direction dir
-local function split_leaf(n, target, id, dir)
+-- replace leaf `target` by a split (target, new) in direction dir; `first`: new window first
+local function split_leaf(n, target, id, dir, first)
     if n.id then
-        if n.id == target then return { a = { id = n.id }, b = { id = id }, dir = dir } end
+        if n.id == target then
+            if first then return { a = { id = id }, b = { id = n.id }, dir = dir } end
+            return { a = { id = n.id }, b = { id = id }, dir = dir }
+        end
         return n
     end
-    n.a, n.b = split_leaf(n.a, target, id, dir), split_leaf(n.b, target, id, dir)
+    n.a, n.b = split_leaf(n.a, target, id, dir, first), split_leaf(n.b, target, id, dir, first)
     return n
 end
 
@@ -119,6 +127,35 @@ local function prev_focused(st, wins, skip)
     return best
 end
 
+local function inside(b, c) return b and c.x >= b.x and c.x < b.x + b.w and c.y >= b.y and c.y < b.y + b.h end
+
+-- window `id` dropped with the cursor at c (g: boxes of the last layout)
+local function drop(ctx, st, g, id, c)
+    local t
+    for oid, b in pairs(g) do if oid ~= id and inside(b, c) then t = oid end end
+    local s = where(st, id)
+    if t then
+        if s == "c" or st.centre == t then swap(st, id, t); return end
+        local without = function(x) return x ~= id end
+        st.l, st.r = prune(st.l, without), prune(st.r, without)
+        local ts = where(st, t)
+        if ts ~= "l" and ts ~= "r" then return end
+        local b = g[t]
+        local dir = (not st[ts].id and b.w >= b.h) and "h" or "v"
+        local first = (dir == "h") and (c.x < b.x + b.w / 2) or (dir == "v" and c.y < b.y + b.h / 2)
+        st[ts] = split_leaf(st[ts], t, id, dir, first)
+        return
+    end
+    -- no window under the cursor: an empty side takes a side window
+    if s == "c" then return end
+    local a = ctx.area
+    local side = (c.x < a.x + a.w / 2) and "l" or "r"
+    if not st[side] then
+        st.l, st.r = prune(st.l, function(x) return x ~= id end), prune(st.r, function(x) return x ~= id end)
+        st[side] = { id = id }
+    end
+end
+
 local function ws_of(ctx)
     for _, t in ipairs(ctx.targets) do
         local ws = t.window and t.window.workspace
@@ -131,7 +168,7 @@ local function ws_key(ctx)
     return ws and (ws.name or tostring(ws.id)) or "?"
 end
 
-local function sync(ctx, st, g)
+local function sync(ctx, st, g, last)
     local wins, present = {}, {}
     for _, t in ipairs(ctx.targets) do
         if t.window then wins[#wins + 1] = t.window; present[t.window.address] = true end
@@ -149,6 +186,17 @@ local function sync(ctx, st, g)
     local centre_closed = st.centre and not keep(st.centre)
     if centre_closed then st.centre = nil end
     st.l, st.r = prune(st.l, keep), prune(st.r, keep)
+
+    -- a known window back after leaving the layout while still mapped (mouse drag): drop it at the cursor
+    if last then
+        for _, t in ipairs(ctx.targets) do
+            local w = t.window
+            if w and not last[w.address] and where(st, w.address) and t.box.w > 0 then
+                local c = hl.get_cursor_pos()
+                if c and inside(t.box, c) then drop(ctx, st, g, w.address, c) end
+            end
+        end
+    end
 
     if centre_closed then   -- promote the most recently focused side window
         local p = prev_focused(st, wins, nil)
@@ -271,7 +319,7 @@ local function state_of(ctx)
     local k = ws_key(ctx)
     states[k] = states[k] or { mfact = MFACT }
     geo[k] = geo[k] or {}
-    return states[k], geo[k]
+    return states[k], geo[k], k
 end
 
 -- Hyprland does not recompute a custom layout after a window closes: ask for it
@@ -280,11 +328,13 @@ hl.on("window.destroy", function() hl.dispatch(hl.dsp.layout("refresh")) end)
 hl.layout.register(NAME, {
     recalculate = function(ctx)
         if #ctx.targets == 0 then return end
-        local st, g = state_of(ctx)
-        sync(ctx, st, g)
+        local st, g, k = state_of(ctx)
+        sync(ctx, st, g, seen[k])
         save_states()
         local by = {}
         for _, t in ipairs(ctx.targets) do if t.window then by[t.window.address] = t end end
+        seen[k] = {}
+        for id in pairs(by) do seen[k][id] = true end
         for k in pairs(g) do g[k] = nil end
 
         local a = ctx.area
