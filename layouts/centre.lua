@@ -45,6 +45,7 @@ local states = load_states()   -- workspace key -> { mfact, centre, l, r } (l / 
 local saved = dump(states)
 local geo = {}                 -- workspace key -> { address -> box } (last layout, not saved)
 local seen = {}                -- workspace key -> { address -> true } (targets of the last layout)
+local placed = {}              -- address -> true: placed since this layout instance loaded (empty after reload, I-016)
 
 local function save_states()
     local s = dump(states)
@@ -194,7 +195,7 @@ local function sync(ctx, st, g, last)
     if last then
         for _, t in ipairs(ctx.targets) do
             local w = t.window
-            if w and not last[w.address] and where(st, w.address) and t.box.w > 0 then
+            if w and placed[w.address] and not last[w.address] and where(st, w.address) and t.box.w > 0 then
                 local c = hl.get_cursor_pos()
                 if c and inside(t.box, c) then drop(ctx, st, g, w.address, c) end
             end
@@ -239,7 +240,7 @@ local function place_tree(n, box, by, g, depth)
     if not n then return end
     if n.id then
         g[n.id] = box
-        if by[n.id] then by[n.id]:place(box) end
+        if by[n.id] then by[n.id]:place(box); placed[n.id] = true end
         return
     end
     local dir = n.dir or ((depth > 0 and box.w >= box.h) and "h" or "v")
@@ -345,7 +346,7 @@ hl.layout.register(NAME, {
         local sw = math.floor((a.w - cw) / 2)
         if st.centre then
             g[st.centre] = { x = a.x + sw, y = a.y, w = cw, h = a.h }
-            if by[st.centre] then by[st.centre]:place(g[st.centre]) end
+            if by[st.centre] then by[st.centre]:place(g[st.centre]); placed[st.centre] = true end
         end
         place_tree(st.l, { x = a.x, y = a.y, w = sw, h = a.h }, by, g, 0)
         place_tree(st.r, { x = a.x + sw + cw, y = a.y, w = a.w - sw - cw, h = a.h }, by, g, 0)

@@ -203,6 +203,8 @@ hl.config({
         force_default_wallpaper = 0,          -- no default wallpaper (OLED care)
         disable_hyprland_logo   = true,       -- no logo / mascot background
         background_color        = "0x000000", -- fallback before awww-daemon starts (wallpaper: scripts/wallpaper-rotate.sh)
+        mouse_move_enables_dpms = true,       -- wake the screen after a manual dpms off
+        key_press_enables_dpms  = true,
     },
     cursor = {
         inactive_timeout = 5,                 -- hide cursor after 5 s idle (OLED care)
@@ -278,6 +280,7 @@ hl.bind(mainMod .. " + Z", hl.dsp.window.fullscreen({ mode = "fullscreen", actio
 hl.bind("PRINT",                hl.dsp.exec_cmd("hyprshot -m window -o ~/Images/Screenshots"))
 hl.bind("CTRL + PRINT",         hl.dsp.exec_cmd("hyprshot -m region -o ~/Images/Screenshots"))
 hl.bind("CTRL + SHIFT + PRINT", hl.dsp.exec_cmd("hyprshot -m output -o ~/Images/Screenshots"))
+hl.bind("XF86Tools", hl.dsp.exec_cmd("sleep 1 && hyprctl dispatch 'hl.dsp.dpms({action = \"off\"})'"))  -- F13 (Keychron knob click): screen off after 1 s, wakes on any input
 
 -- Move focus with mainMod + h/j/k/l (same mapping as the legacy config)
 hl.bind(mainMod .. " + h", hl.dsp.focus({ direction = "left" }))
