@@ -13,4 +13,5 @@ hyprctl dispatch 'hl.dsp.exec_cmd("kitty", { workspace = "1 silent" })'
 wait_for kitty 1
 hyprctl dispatch 'hl.dsp.exec_cmd("firefox", { workspace = "1 silent" })'
 wait_for firefox 1
+hyprctl dispatch 'hl.dsp.focus({ window = "class:kitty" })'   # centre focused -> Brave goes to the emptier side (right)
 hyprctl dispatch 'hl.dsp.exec_cmd("brave --ozone-platform=wayland --enable-features=UseOzonePlatform", { workspace = "1 silent" })'
