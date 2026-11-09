@@ -86,6 +86,7 @@ hl.env("HYPRCURSOR_SIZE", "24")
 
 -- Custom layout "lua:centre" (D-011): fixed centre window, dwindle-like sides
 dofile(os.getenv("HOME") .. "/.config/hypr/layouts/centre.lua")
+dofile(os.getenv("HOME") .. "/.config/hypr/layouts/video.lua")    -- lua:video, workspace 6 (D-015)
 
 -- See https://wiki.hypr.land/configuring/core/config-options/
 hl.config({
@@ -358,6 +359,21 @@ hl.window_rule({
 -- for i = 2, 10 do
 --     hl.workspace_rule({ workspace = tostring(i), monitor = "DP-1", default = (i == 2) })
 -- end
+
+-- Workspace 6 = video (D-015): lua:video, no gaps / border / rounding
+hl.workspace_rule({ workspace = "6", layout = "lua:video", gaps_in = 0, gaps_out = 0, no_border = true, no_rounding = true })
+hl.window_rule({ name = "vlc-on-workspace-6", match = { class = "^vlc$" }, workspace = "6 silent" })
+-- VLC told it is fullscreen (hides its controls) but kept in its layout box; 1 s after mapping,
+-- earlier is ignored (tested)
+hl.on("window.open", function(w)
+    if w and w.class == "vlc" then
+        hl.exec_cmd("sleep 1; hyprctl dispatch 'hl.dsp.window.fullscreen_state({ internal = 0, client = 2, window = \"address:" .. w.address .. "\" })'")
+    end
+end)
+-- Waybar hidden on workspace 6, shown again elsewhere
+hl.on("workspace.active", function(ws)
+    hl.exec_cmd((ws and ws.id == 6) and "pkill -SIGUSR1 -x waybar" or "pkill -SIGUSR2 -x waybar")
+end)
 
 -- QBZ: its window maps too late for exec rules, place it by class
 hl.window_rule({
