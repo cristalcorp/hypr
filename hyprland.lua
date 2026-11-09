@@ -363,6 +363,7 @@ hl.window_rule({
 -- Workspace 6 = video (D-015): lua:video, no gaps / border / rounding
 hl.workspace_rule({ workspace = "6", layout = "lua:video", gaps_in = 0, gaps_out = 0, no_border = true, no_rounding = true })
 hl.window_rule({ name = "vlc-on-workspace-6", match = { class = "^vlc$" }, workspace = "6 silent" })
+hl.window_rule({ name = "mpv-on-workspace-6", match = { class = "^mpv$" }, workspace = "6 silent" })   -- fullscreen (mpv.conf), blurred sides (D-016)
 -- VLC told it is fullscreen (hides its controls) but kept in its layout box; 1 s after mapping,
 -- earlier is ignored (tested)
 hl.on("window.open", function(w)
