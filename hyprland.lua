@@ -9,12 +9,13 @@
 ------------------
 
 -- See https://wiki.hypr.land/configuring/core/monitors/
--- Samsung Odyssey OLED G9 G93SD (D-007): native 5120x1440 at 240 Hz, matched by name (any port)
-hl.monitor({ output = "desc:Samsung Electric Company Odyssey G93SD", mode = "5120x1440@240", position = "0x0", scale = 1, reserved_area = { top = 38 } })
-hl.monitor({ output = "",  mode = "preferred", position = "auto", scale = 1, reserved_area = { top = 38 } })
-hl.monitor({ output = "0", mode = "preferred", position = "auto", scale = 1, reserved_area = { top = 38 } })
-hl.monitor({ output = "1", mode = "preferred", position = "auto", scale = 1, reserved_area = { top = 38 } })
+-- Laptop (darkone): built-in 15.6" 2560x1440 at 240 Hz, scale 1.6 (~1600x900 usable)
+hl.monitor({ output = "eDP-1", mode = "2560x1440@240", position = "0x0", scale = 1.6, reserved_area = { top = 38 } })
+hl.monitor({ output = "",      mode = "preferred",     position = "auto", scale = 1, reserved_area = { top = 38 } })
 
+-- Hybrid graphics (Intel Iris Xe + RTX 3070 Ti): NVIDIA first. Today card0 = NVIDIA (01:00.0),
+-- card1 = Intel (00:02.0); by-path names can't be used (':' is the list separator).
+hl.env("AQ_DRM_DEVICES", "/dev/dri/card0:/dev/dri/card1")
 -- Those options are supposed to improve performance in Wayland while using Nvidia
 hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
 hl.env("__GL_MaxFramesAllowed", "1")
@@ -43,13 +44,9 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
 
     -- Apps on their workspaces (icons in waybar: 1 browser, 2 terminal, 3 notes, 4 music)
-    hl.exec_cmd("~/.config/hypr/scripts/ws1-start.sh")   -- ws 1: Firefox left, Brave right, terminal center
+    -- Laptop: nothing started on ws 1; no OLED care (LCD screen): no hypridle, awww, border steps
     hl.exec_cmd(terminal, { workspace = "2 silent" })
     hl.exec_cmd(obsidian, { workspace = "3 silent" })
-    hl.exec_cmd("hypridle")   -- idle: hides waybar after 30s (see hypridle.conf)
-    hl.exec_cmd("awww-daemon --quiet")
-    hl.exec_cmd("~/.config/hypr/scripts/wallpaper-rotate.sh")   -- OLED: dark-gray rotation, 5 min, 20 s fade
-    hl.exec_cmd("~/.config/hypr/scripts/border-steps.sh")       -- OLED: border gradient angle +45° every 30 s
     hl.exec_cmd("qbz")    -- workspace set by the "qbz-on-workspace-4" window rule
 end)
 
@@ -84,9 +81,7 @@ hl.env("HYPRCURSOR_SIZE", "24")
 ---- LOOK AND FEEL ----
 -----------------------
 
--- Custom layout "lua:centre" (D-011): fixed centre window, dwindle-like sides
-dofile(os.getenv("HOME") .. "/.config/hypr/layouts/centre.lua")
--- dofile(os.getenv("HOME") .. "/.config/hypr/layouts/video.lua")    -- lua:video, workspace 6 (D-015, replaced by D-018)
+-- Laptop: plain dwindle (lua:centre in layouts/centre.lua is for the 32:9 G93SD, branch bigblackarch)
 
 -- See https://wiki.hypr.land/configuring/core/config-options/
 hl.config({
@@ -108,7 +103,7 @@ hl.config({
         -- Please see the Tearing page on the wiki before you turn this on
         allow_tearing = false,
 
-        layout = "lua:centre",   -- fixed centre window, new windows split the active side window (layouts/centre.lua); fallback: "master"
+        layout = "dwindle",
     },
 
     decoration = {
@@ -148,8 +143,7 @@ hl.curve("quick",          { type = "bezier", points = { {0.15, 0},    {0.1, 1} 
 
 hl.animation({ leaf = "global",        enabled = true, speed = 10,   bezier = "default" })
 hl.animation({ leaf = "border",        enabled = true, speed = 5.39, bezier = "easeOutQuint" })
--- OLED care (D-006): continuous rotation redrew every frame at 240 Hz (I-011); stepped angle instead (scripts/border-steps.sh)
-hl.animation({ leaf = "borderangle",   enabled = false })
+hl.animation({ leaf = "borderangle",   enabled = false })   -- static gradient
 hl.animation({ leaf = "windows",       enabled = true, speed = 4.79, bezier = "easeOutQuint" })
 hl.animation({ leaf = "windowsIn",     enabled = true, speed = 4.1,  bezier = "easeOutQuint", style = "popin 87%" })
 hl.animation({ leaf = "windowsOut",    enabled = true, speed = 1.49, bezier = "linear",       style = "popin 87%" })
@@ -183,32 +177,25 @@ hl.animation({ leaf = "zoomFactor",    enabled = true, speed = 7,    bezier = "q
 --     rounding    = 0,
 -- })
 
--- hl.config({
---     dwindle = {
---         pseudotile     = true, -- Master switch for pseudotiling (SUPER + P below)
---         preserve_split = true, -- You probably want this
---     },
--- })
+hl.config({
+    dwindle = {
+        preserve_split = true, -- You probably want this
+    },
+})
 
 hl.config({
     master = {
         new_status = "master",
-        orientation = "center",              -- main window in the middle of the 32:9 screen
-        slave_count_for_center_master = 0,   -- centered even when alone (sides show the wallpaper)
-        mfact = 0.36,                        -- main window ≈ 1827 px of 5120 (chosen by Cris on the G9)
     },
 })
 
 hl.config({
     misc = {
-        force_default_wallpaper = 0,          -- no default wallpaper (OLED care)
+        force_default_wallpaper = 0,          -- no default wallpaper
         disable_hyprland_logo   = true,       -- no logo / mascot background
-        background_color        = "0x000000", -- fallback before awww-daemon starts (wallpaper: scripts/wallpaper-rotate.sh)
-        mouse_move_enables_dpms = true,       -- wake the screen after a manual dpms off
+        background_color        = "0x1a1a1a", -- plain dark gray background (no awww on the laptop)
+        mouse_move_enables_dpms = true,       -- wake the screen after a manual dpms off (F13)
         key_press_enables_dpms  = true,
-    },
-    cursor = {
-        inactive_timeout = 5,                 -- hide cursor after 5 s idle (OLED care)
     },
 })
 
@@ -230,7 +217,7 @@ hl.config({
         sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
 
         touchpad = {
-            natural_scroll = false,
+            natural_scroll = true,   -- laptop touchpad (as in the former darkone config)
         },
     },
 })
@@ -264,13 +251,14 @@ hl.bind(mainMod .. " + V",      hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + space",  hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P",      hl.dsp.window.pseudo())          -- dwindle
 hl.bind(mainMod .. " + R",      hl.dsp.layout("togglesplit"))    -- dwindle
-hl.bind(mainMod .. " + CTRL + left",  hl.dsp.layout("shrink"))   -- lua:centre: centre window narrower
-hl.bind(mainMod .. " + CTRL + right", hl.dsp.layout("grow"))     -- lua:centre: centre window wider
-hl.bind(mainMod .. " + SHIFT + left",   hl.dsp.layout("move l"))      -- lua:centre: move window (same side: swap;
-hl.bind(mainMod .. " + SHIFT + right",  hl.dsp.layout("move r"))      --   toward the centre: jump to the other side)
-hl.bind(mainMod .. " + SHIFT + up",     hl.dsp.layout("move u"))
-hl.bind(mainMod .. " + SHIFT + down",   hl.dsp.layout("move d"))
-hl.bind(mainMod .. " + SHIFT + RETURN", hl.dsp.layout("swapcentre"))  -- lua:centre: active window <-> centre
+-- Same keys as the lua:centre binds of bigblackarch, dwindle equivalents
+hl.bind(mainMod .. " + CTRL + left",  hl.dsp.window.resize({ x = -40, y = 0, relative = true }), { repeating = true })   -- narrower
+hl.bind(mainMod .. " + CTRL + right", hl.dsp.window.resize({ x = 40,  y = 0, relative = true }), { repeating = true })   -- wider
+hl.bind(mainMod .. " + SHIFT + left",   hl.dsp.window.move({ direction = "left" }))    -- move window
+hl.bind(mainMod .. " + SHIFT + right",  hl.dsp.window.move({ direction = "right" }))
+hl.bind(mainMod .. " + SHIFT + up",     hl.dsp.window.move({ direction = "up" }))
+hl.bind(mainMod .. " + SHIFT + down",   hl.dsp.window.move({ direction = "down" }))
+hl.bind(mainMod .. " + SHIFT + RETURN", hl.dsp.layout("swapsplit"))   -- swap the two halves of the split
 
 hl.bind(mainMod .. " + F", hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(brave))
