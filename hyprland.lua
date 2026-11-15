@@ -40,7 +40,7 @@ local obsidian    = "obsidian"
 
 -- See https://wiki.hypr.land/configuring/core/autostart/
 hl.on("hyprland.start", function()
-    hl.exec_cmd("~/.config/waybar/scripts/bar-color.sh; waybar -s ~/.cache/waybar/style.css & swaync")   -- random bar colors (D-013)
+    hl.exec_cmd("~/.config/waybar/scripts/bar-color.sh; waybar -c ~/.config/waybar/config-darkone -s ~/.cache/waybar/style.css & swaync")   -- random bar colors (D-013)
     hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
 
     -- Apps on their workspaces (icons in waybar: 1 browser, 2 terminal, 3 notes, 4 music)
