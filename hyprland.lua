@@ -13,12 +13,8 @@
 hl.monitor({ output = "eDP-1", mode = "2560x1440@60", position = "0x0", scale = 1.6, reserved_area = { top = 38 } })
 hl.monitor({ output = "",      mode = "preferred",     position = "auto", scale = 1, reserved_area = { top = 38 } })
 
--- Hybrid graphics (Intel Iris Xe + RTX 3070 Ti): NVIDIA first. Today card0 = NVIDIA (01:00.0),
--- card1 = Intel (00:02.0); by-path names can't be used (':' is the list separator).
-hl.env("AQ_DRM_DEVICES", "/dev/dri/card0:/dev/dri/card1")
--- Those options are supposed to improve performance in Wayland while using Nvidia
-hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
-hl.env("__GL_MaxFramesAllowed", "1")
+-- Hybrid graphics (Intel Iris Xe + RTX 3070 Ti): the desktop stays on the Intel iGPU (eDP-1 is wired to it).
+-- The NVIDIA GPU stays free for CUDA (ComfyUI, Kobold, Blender Cycles); OpenGL/Vulkan apps on it: prime-run <app>
 
 
 ---------------------
