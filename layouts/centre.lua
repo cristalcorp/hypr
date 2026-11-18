@@ -46,6 +46,12 @@ local saved = dump(states)
 -- boot to the next), saved with the states so a reload keeps it; Lua seeds math.random itself
 states.mfact0 = states.mfact0 or (0.34 + math.random() * 0.03)
 local MFACT = states.mfact0
+-- extra top / bottom margin drawn once per session, 0..8 each (OLED: the horizontal window
+-- edges move from one boot to the next; only adds space, never under Waybar, D-004).
+-- Real shift: 0, or pad + gaps_in (6..13 px): Hyprland adds gaps_in to any edge not on the area edge.
+-- Back to fixed sizes (D-022, D-023): mfact0 = 0.36, pad_t = 0, pad_b = 0 below.
+states.pad_t = states.pad_t or math.random(0, 8)
+states.pad_b = states.pad_b or math.random(0, 8)
 local geo = {}                 -- workspace key -> { address -> box } (last layout, not saved)
 local seen = {}                -- workspace key -> { address -> true } (targets of the last layout)
 local placed = {}              -- address -> true: placed since this layout instance loaded (empty after reload, I-016)
@@ -344,7 +350,8 @@ hl.layout.register(NAME, {
         for id in pairs(by) do seen[k][id] = true end
         for k in pairs(g) do g[k] = nil end
 
-        local a = ctx.area
+        local r = ctx.area
+        local a = { x = r.x, y = r.y + states.pad_t, w = r.w, h = r.h - states.pad_t - states.pad_b }
         local cw = math.floor(a.w * st.mfact)
         local sw = math.floor((a.w - cw) / 2)
         if st.centre then
