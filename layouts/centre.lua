@@ -19,7 +19,6 @@
 -- top/bottom: one above the other, left/right: side by side; on an empty side: takes it).
 -- Otherwise (e.g. floating toggled back) it returns to its place.
 local NAME = CENTRE_LAYOUT_NAME or "centre"
-local MFACT = 0.36
 local SAVE = (os.getenv("XDG_RUNTIME_DIR") or "/tmp") .. "/hypr-" .. NAME .. "-layout.lua"
 
 -- serialize plain tables (strings, numbers, nested tables) to a Lua literal
@@ -43,6 +42,10 @@ end
 
 local states = load_states()   -- workspace key -> { mfact, centre, l, r } (l / r: tree nodes)
 local saved = dump(states)
+-- centre width drawn once per session in [0.34, 0.37] (OLED: the centre edges move from one
+-- boot to the next), saved with the states so a reload keeps it; Lua seeds math.random itself
+states.mfact0 = states.mfact0 or (0.34 + math.random() * 0.03)
+local MFACT = states.mfact0
 local geo = {}                 -- workspace key -> { address -> box } (last layout, not saved)
 local seen = {}                -- workspace key -> { address -> true } (targets of the last layout)
 local placed = {}              -- address -> true: placed since this layout instance loaded (empty after reload, I-016)
