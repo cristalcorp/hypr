@@ -9,8 +9,8 @@
 ------------------
 
 -- See https://wiki.hypr.land/configuring/core/monitors/
--- Laptop (darkone): built-in 15.6" 2560x1440 at 60 Hz (240 Hz heats the Intel iGPU), scale 1.6 (~1600x900 usable)
-hl.monitor({ output = "eDP-1", mode = "2560x1440@60", position = "0x0", scale = 1.6, reserved_area = { top = 38 } })
+-- Laptop (darkone): built-in 15.6" 2560x1440 at 60 Hz (240 Hz heats the Intel iGPU), scale 1.25 (2048x1152 usable)
+hl.monitor({ output = "eDP-1", mode = "2560x1440@60", position = "0x0", scale = 1.25, reserved_area = { top = 38 } })
 hl.monitor({ output = "",      mode = "preferred",     position = "auto", scale = 1, reserved_area = { top = 38 } })
 
 -- Hybrid graphics (Intel Iris Xe + RTX 3070 Ti): the desktop stays on the Intel iGPU (eDP-1 is wired to it).
