@@ -40,10 +40,8 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
 
     -- Apps on their workspaces (icons in waybar: 1 browser, 2 terminal, 3 notes, 4 music)
-    -- Laptop: nothing started on ws 1; no OLED care (LCD screen): no hypridle, awww, border steps
-    hl.exec_cmd(terminal, { workspace = "2 silent" })
+    -- Laptop: only Obsidian at start (ws 3); no OLED care (LCD screen): no hypridle, awww, border steps
     hl.exec_cmd(obsidian, { workspace = "3 silent" })
-    hl.exec_cmd("qbz")    -- workspace set by the "qbz-on-workspace-4" window rule
 end)
 
 
